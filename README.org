@@ -1,0 +1,9 @@
+[[https://github.com/ROCKTAKEY/flymake-elisp-config][https://img.shields.io/github/tag/ROCKTAKEY/flymake-elisp-config.svg?style=flat-square]]
+[[file:LICENSE][https://img.shields.io/github/license/ROCKTAKEY/flymake-elisp-config.svg?style=flat-square]]
+[[https://codecov.io/gh/ROCKTAKEY/flymake-elisp-config?branch=master][https://img.shields.io/codecov/c/github/ROCKTAKEY/flymake-elisp-config.svg?style=flat-square]]
+[[https://github.com/ROCKTAKEY/flymake-elisp-config/actions][https://img.shields.io/github/workflow/status/ROCKTAKEY/flymake-elisp-config/test/master.svg?style=flat-square]]
+* flymake-elisp-config: Flymake on Emacs Lisp mode in init.el
+
+* How to Use?
+* License
+  This package is licensed by GPLv3. See [[file:LICENSE][LICENSE]].
