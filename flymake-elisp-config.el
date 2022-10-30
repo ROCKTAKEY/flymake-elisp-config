@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.2.0
+;; Version: 0.3.0
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -202,6 +202,15 @@ files."
   (when-let* ((project (project-current))
               (root (project-root project)))
     (locate-file "Keg" (list root))))
+
+;;;###autoload
+(defun flymake-elisp-config-as-keg ()
+  "Current buffer file is regarded as a `keg'-managed project by flymake.
+`load-path' used by flymake is provided by
+`flymake-elisp-config-get-load-path-keg'."
+  (interactive)
+  (flymake-elisp-config-mode)
+  (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-keg))
 
 (provide 'flymake-elisp-config)
 ;;; flymake-elisp-config.el ends here
