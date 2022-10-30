@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.3.1
+;; Version: 0.4.0
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -87,7 +87,8 @@ Set getter function of `load-path' to `flymake-elisp-config-load-path-getter'."
 
 (defcustom flymake-elisp-config-auto-load-path-getter-alist
   '((flymake-elisp-config-config-p . flymake-elisp-config-get-load-path-config)
-    (flymake-elisp-config-keg-p . flymake-elisp-config-get-load-path-keg))
+    (flymake-elisp-config-keg-p . flymake-elisp-config-get-load-path-keg)
+    (flymake-elisp-config-cask-p . flymake-elisp-config-get-load-path-cask))
   "Alist which expresses `load-path' getter on Emacs Lisp mode flymake.
 `car' of each element is function which returns non-nil if `cdr' of the element
 should be used as getter.  `cdr' of each element is function which returns
@@ -185,6 +186,49 @@ files."
   (interactive)
   (flymake-elisp-config-mode)
   (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-config))
+
+
+;;; `load-path' getter for project maneged by `cask'
+
+(defvar-local flymake-elisp-config-load-path-cask-cache nil
+  "Cache for `flymake-elisp-config-get-load-path-cask'.")
+
+(defun flymake-elisp-config-get-load-path-cask ()
+  "Get `load-path' for flymake in Emacs Lisp package file managed by `cask'.
+This function has cache because \"cask load-path\" is late.
+You can refresh cache by `flymake-elisp-config-get-load-path-cask-refresh'."
+  (append elisp-flymake-byte-compile-load-path
+          (or flymake-elisp-config-load-path-cask-cache
+              (setq flymake-elisp-config-load-path-cask-cache
+                    (flymake-elisp-config-get-load-path-cask-get-from-cask)))))
+
+(defun flymake-elisp-config-get-load-path-cask-get-from-cask ()
+  "Return `load-path' for flymake in package file from `cask'."
+  (let ((default-directory (project-root (project-current))))
+    (split-string
+     (car (last (split-string (shell-command-to-string "cask load-path"))))
+     (path-separator))))
+
+(defun flymake-elisp-config-get-load-path-cask-refresh ()
+  "Refresh cache for `load-path' for flymake in package file managed by `cask'."
+  (interactive)
+  (setq flymake-elisp-config-load-path-cask-cache
+        (flymake-elisp-config-get-load-path-cask-get-from-cask)))
+
+(defun flymake-elisp-config-cask-p ()
+  "Return non-nil if current buffer is in the project managed by `cask'."
+  (when-let* ((project (project-current))
+              (root (project-root project)))
+    (locate-file "Cask" (list root))))
+
+;;;###autoload
+(defun flymake-elisp-config-as-cask ()
+  "Current buffer file is regarded as a `cask'-managed project by flymake.
+`load-path' used by flymake is provided by
+`flymake-elisp-config-get-load-path-cask'."
+  (interactive)
+  (flymake-elisp-config-mode)
+  (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-cask))
 
 
 ;;; `load-path' getter for project maneged by `keg'

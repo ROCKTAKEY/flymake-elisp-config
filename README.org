@@ -24,6 +24,7 @@ Just write in init.el:
 If automatical setting is wrong, you can use =flymake-elisp-config-as-*= commands to change =load-path= for flymake manually.
 - =flymake-elisp-config-as-config= :: Emacs configuration file such as init.el
 - =flymake-elisp-config-as-keg= :: Emacs Lisp project managed by =keg=.
+- =flymake-elisp-config-as-cask= :: Emacs Lisp project managed by =cask=.
 - =flymake-elisp-config-as-default= :: Default Emacs Lisp file. It uses same =load-path= as default flymake.
 
 * License
