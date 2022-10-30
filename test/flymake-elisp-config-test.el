@@ -33,8 +33,29 @@
 
 (require 'flymake-elisp-config)
 
-
-
+(ert-deftest flymake-elisp-config-config-file-p ()
+  (let ((regexp-list
+         flymake-elisp-config-config-file-name-regexp-list))
+   (should (flymake-elisp-config-config-file-p
+           "init.el"
+           "~/.emacs.d"
+           regexp-list))
+   (should (flymake-elisp-config-config-file-p
+           ".emacs"
+           "~/"
+           regexp-list))
+   (should (flymake-elisp-config-config-file-p
+           ".emacs.el"
+           "~/"
+           regexp-list))
+   (should (flymake-elisp-config-config-file-p
+           "init.el"
+           "~/dotfiles/emacs/.emacs.d"
+           regexp-list))
+   (should-not (flymake-elisp-config-config-file-p
+                "flymake-elisp-config.el"
+                "~/flymake-elisp-config"
+                regexp-list))))
 
 (provide 'flymake-elisp-config-test)
 ;;; flymake-elisp-config-test.el ends here
