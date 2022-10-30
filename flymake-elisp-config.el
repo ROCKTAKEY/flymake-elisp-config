@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.4.1
+;; Version: 0.4.2
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -41,7 +41,8 @@
 ;;; `flymake-elisp-config-mode'
 
 (defcustom flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-default
-  "`load-path' used by flymake in current buffer on Emacs Lisp mode."
+  "`load-path' used by flymake in current buffer on Emacs Lisp mode.
+The default value is used as fallback `load-path' getter."
   :group 'flymake-elisp-config
   :local t
   :type 'function)
