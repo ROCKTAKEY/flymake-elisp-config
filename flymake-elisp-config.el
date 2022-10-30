@@ -5,8 +5,8 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1"))
+;; Version: 0.2.0
+;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,9 @@
 ;; Flymake on Emacs Lisp mode in init.el
 
 ;;; Code:
+
+(require 'subr-x)
+(require 'project)
 
 (defgroup flymake-elisp-config ()
   "Flymake on Emacs Lisp mode in init.el."
@@ -83,7 +86,8 @@ Set getter function of `load-path' to `flymake-elisp-config-load-path-getter'."
 ;;; `flymake-elisp-config-auto-mode'
 
 (defcustom flymake-elisp-config-auto-load-path-getter-alist
-  '((flymake-elisp-config-config-p . flymake-elisp-config-get-load-path-config))
+  '((flymake-elisp-config-config-p . flymake-elisp-config-get-load-path-config)
+    (flymake-elisp-config-keg-p . flymake-elisp-config-get-load-path-keg))
   "Alist which expresses `load-path' getter on Emacs Lisp mode flymake.
 `car' of each element is function which returns non-nil if `cdr' of the element
 should be used as getter.  `cdr' of each element is function which returns
@@ -181,6 +185,23 @@ files."
   (interactive)
   (flymake-elisp-config-mode)
   (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-config))
+
+
+;;; `load-path' getter for project maneged by `keg'
+
+(defun flymake-elisp-config-get-load-path-keg ()
+  "Get `load-path' for flymake in Emacs Lisp package file managed by `keg'."
+  (append elisp-flymake-byte-compile-load-path
+          (let ((default-directory (project-root (project-current))))
+           (split-string
+           (car (last (split-string (shell-command-to-string "keg load-path"))))
+           (path-separator)))))
+
+(defun flymake-elisp-config-keg-p ()
+  "Return non-nil if current buffer is in the project managed by `keg'."
+  (when-let* ((project (project-current))
+              (root (project-root project)))
+    (locate-file "Keg" (list root))))
 
 (provide 'flymake-elisp-config)
 ;;; flymake-elisp-config.el ends here
