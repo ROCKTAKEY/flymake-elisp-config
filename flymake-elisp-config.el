@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.4.0
+;; Version: 0.4.1
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -237,9 +237,9 @@ You can refresh cache by `flymake-elisp-config-get-load-path-cask-refresh'."
   "Get `load-path' for flymake in Emacs Lisp package file managed by `keg'."
   (append elisp-flymake-byte-compile-load-path
           (let ((default-directory (project-root (project-current))))
-           (split-string
-           (car (last (split-string (shell-command-to-string "keg load-path"))))
-           (path-separator)))))
+            (split-string
+             (car (last (split-string (shell-command-to-string "keg load-path"))))
+             (path-separator)))))
 
 (defun flymake-elisp-config-keg-p ()
   "Return non-nil if current buffer is in the project managed by `keg'."
