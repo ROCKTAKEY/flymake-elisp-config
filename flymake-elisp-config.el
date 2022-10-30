@@ -1,11 +1,11 @@
-;;; flymake-elisp-config.el --- Flymake on Emacs Lisp mode in init.el  -*- lexical-binding: t; -*-
+;;; flymake-elisp-config.el --- Setup load-path for flymake on Emacs Lisp mode  -*- Lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  ROCKTAKEY
 
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.3.0
+;; Version: 0.3.1
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -32,7 +32,7 @@
 (require 'project)
 
 (defgroup flymake-elisp-config ()
-  "Flymake on Emacs Lisp mode in init.el."
+  "Setup `load-path' for flymake on Emacs Lisp mode."
   :group 'flymake
   :prefix "flymake-elisp-config-"
   :link '(url-link "https://github.com/ROCKTAKEY/flymake-elisp-config"))
