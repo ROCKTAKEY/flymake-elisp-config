@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.4.4
+;; Version: 0.4.5
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -247,8 +247,12 @@ You can refresh cache by `flymake-elisp-config-get-load-path-cask-refresh'."
 (defun flymake-elisp-config-cask-p ()
   "Return non-nil if current buffer is in the project managed by `cask'."
   (when-let* ((project (project-current))
-              (root (project-root project)))
-    (locate-file "Cask" (list root))))
+              (root (project-root project))
+              (caskp (locate-file "Cask" (list root))))
+    (if (executable-find "cask")
+        caskp
+      (warn "`cask' executable is not found. Please install it and run M-x `flymake-elisp-config-as-cask'.")
+      nil)))
 
 ;;;###autoload
 (defun flymake-elisp-config-as-cask ()
@@ -273,8 +277,12 @@ You can refresh cache by `flymake-elisp-config-get-load-path-cask-refresh'."
 (defun flymake-elisp-config-keg-p ()
   "Return non-nil if current buffer is in the project managed by `keg'."
   (when-let* ((project (project-current))
-              (root (project-root project)))
-    (locate-file "Keg" (list root))))
+              (root (project-root project))
+              (kegp (locate-file "Keg" (list root))))
+    (if (executable-find "keg")
+        kegp
+      (warn "`keg' executable is not found. Please install it and run M-x `flymake-elisp-config-as-keg'.")
+      nil)))
 
 ;;;###autoload
 (defun flymake-elisp-config-as-keg ()
