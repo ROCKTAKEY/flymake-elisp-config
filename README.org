@@ -5,6 +5,7 @@
 * flymake-elisp-config: Setup =load-path= for flymake on Emacs Lisp mode
 Default =load-path= for flymake on Emacs Lisp mode can be set through =elisp-flymake-byte-compile-load-path=,
 but it is just a global variable. When you are editing init.el, flymake should use all the =load-path=.
+When you update some packages, =load-path= also should be updated.
 When you are editing your package, flymake should use paths provided by cask or keg.
 
 This package provides three features:
