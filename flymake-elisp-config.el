@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.4.5
+;; Version: 0.4.6
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -58,6 +58,7 @@
 
 (require 'subr-x)
 (require 'project)
+(require 'flymake)
 
 (defgroup flymake-elisp-config ()
   "Setup `load-path' for flymake on Emacs Lisp mode."
