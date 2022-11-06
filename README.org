@@ -10,13 +10,13 @@ When you are editing your package, flymake should use paths provided by cask or 
 
 This package provides three features:
 - Customizable variable =flymake-elisp-config-load-path-getter=, which is a FUNCTION returning =load-path= for flymake.
-- Automatical setting of =load-path= for flymake by =flymake-elisp-config-auto-mode=.
+- Automatic setting of =load-path= for flymake by =flymake-elisp-config-auto-mode=.
 - Manual setting of it by =flymake-elisp-config-as-*=.
 
 * How to Use?
 Just write in init.el:
 #+begin_src emacs-lisp :tangle yes
-  ;; Make `load-path' for flymake customizable thorugh `flymake-elisp-config-load-path-getter'.
+  ;; Make `load-path' for flymake customizable through `flymake-elisp-config-load-path-getter'.
   (flymake-elisp-config-global-mode)
   ;; Automatically set `load-path' for flymake.
   (flymake-elisp-config-auto-mode)

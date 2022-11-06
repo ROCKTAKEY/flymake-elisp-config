@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.4.7
+;; Version: 0.4.8
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -34,14 +34,14 @@
 ;; This package provides three features:
 ;; - Customizable variable `flymake-elisp-config-load-path-getter',
 ;;   which is a FUNCTION return `load-path' for flymake.
-;; - Automatical setting of `load-path' for flymake by
+;; - Automatic setting of `load-path' for flymake by
 ;;   `flymake-elisp-config-auto-mode'.
 ;; - Manual setting of it by `flymake-elisp-config-as-*'.
 
 ;;; How to Use?
 ;; Just write in init.el:
 ;;
-;;   ;; Make `load-path' for flymake customizable thorugh
+;;   ;; Make `load-path' for flymake customizable through
 ;;   ;; `flymake-elisp-config-load-path-getter'.
 ;;   (flymake-elisp-config-global-mode)
 ;;   ;; Automatically set `load-path' for flymake.
@@ -142,7 +142,7 @@ to determines `load-path' getter."
 
 ;;;###autoload
 (define-minor-mode flymake-elisp-config-auto-mode
-  "Configure flymake appropreately in Emacs Lisp file.
+  "Configure flymake appropriately in Emacs Lisp file.
 `flymake-elisp-config-global-mode' should be turned on to use this minor mode."
   :global t
   :group 'flymake-elisp-config
@@ -219,7 +219,7 @@ files."
   (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-config))
 
 
-;;; `load-path' getter for project maneged by `cask'
+;;; `load-path' getter for project managed by `cask'
 
 (defvar-local flymake-elisp-config-load-path-cask-cache nil
   "Cache for `flymake-elisp-config-get-load-path-cask'.")
@@ -266,7 +266,7 @@ You can refresh cache by `flymake-elisp-config-get-load-path-cask-refresh'."
   (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-cask))
 
 
-;;; `load-path' getter for project maneged by `keg'
+;;; `load-path' getter for project managed by `keg'
 
 (defun flymake-elisp-config-get-load-path-keg ()
   "Get `load-path' for flymake in Emacs Lisp package file managed by `keg'."
