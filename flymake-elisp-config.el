@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 0.4.8
+;; Version: 0.4.9
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -200,10 +200,10 @@ files."
   "Return non-nil if current buffer file is Emacs configuration file.
 Each element of REGEXP-LIST, a regular expression, matches Emacs configuration
 files."
-  (let* ((file (buffer-file-name))
-         (current-directory default-directory)
-         (file-fullname (expand-file-name file current-directory))
-         (regexp-list flymake-elisp-config-config-file-name-regexp-list))
+  (when-let* ((file (buffer-file-name))
+              (current-directory default-directory)
+              (file-fullname (expand-file-name file current-directory))
+              (regexp-list flymake-elisp-config-config-file-name-regexp-list))
     (seq-some
      (lambda (regexp)
        (string-match-p regexp file-fullname))
