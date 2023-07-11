@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -422,13 +422,15 @@ It also runs when the buffer initialized."
 
   (unless (executable-find "cask")
     (user-error "`cask' executable is not found.  Please install it and run M-x `flymake-elisp-config-as-cask'"))
-
+  (message "Run \"cask install\"...")
   (flymake-elisp-config--initializer
    buffer
    "cask" '("install")
    `(lambda (_process _event)
       (if (string= event "finished\n")
-          (flymake-elisp-config-get-load-path-cask-refresh ,buffer)
+          (progn
+            (message "Run \"cask install\"...done")
+            (flymake-elisp-config-get-load-path-cask-refresh ,buffer))
         (user-error "Somehow \"cask install\" failed"))))
 
   (with-current-buffer buffer
