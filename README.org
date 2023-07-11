@@ -9,9 +9,9 @@ When you update some packages, =load-path= also should be updated.
 When you are editing your package, flymake should use paths provided by cask or keg.
 
 This package provides three features:
-- Customizable variable =flymake-elisp-config-load-path-getter=, which is a FUNCTION returning =load-path= for flymake.
+- Customizable variable =flymake-elisp-config-load-path-getter=, which is a =FUNCTION= returning =load-path= for flymake.
 - Automatic setting of =load-path= for flymake by =flymake-elisp-config-auto-mode=.
-- Manual setting of it by =flymake-elisp-config-as-*=.
+- Manual setting of it by configurers named =flymake-elisp-config-as-*=.
 
 * How to Use?
 Just write in init.el:
@@ -27,6 +27,25 @@ If automatical setting is wrong, you can use =flymake-elisp-config-as-*= command
 - =flymake-elisp-config-as-keg= :: Emacs Lisp project managed by =keg=.
 - =flymake-elisp-config-as-cask= :: Emacs Lisp project managed by =cask=.
 - =flymake-elisp-config-as-default= :: Default Emacs Lisp file. It uses same =load-path= as default flymake.
+
+* Add configurer
+When you want to use another =load-path= getter, you can define =configurer=.
+It can be achived by three steps:
+1. Define predicate
+2. Define configurer
+3. Register to =flymake-elisp-config-auto-configurer-alist=
+
+**  Define predicate
+Define predicate function, which takes =BUFFER= as an argument,
+and which return =non-nil= only when =flymake= should use your new configurer.
+
+** Define configurer
+Define configurer function, which takes =BUFFER= as an argument,
+and which sets =flymake-elisp-config-load-path-getter= in =BUFFER=.
+
+The value of =flymake-elisp-config-load-path-getter= should be a function
+which takes =BUFFER= as an argument, and returns list of path, like =load-path=,
+which is used by =flymake= on =BUFFER=.
 
 * License
   This package is licensed by GPLv3. See [[file:LICENSE][LICENSE]].
