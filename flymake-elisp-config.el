@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 1.0.2
+;; Version: 1.1.0
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -93,6 +93,8 @@
 ;;         Emacs Lisp project managed by `keg'.
 ;;   `flymake-elisp-config-as-cask'
 ;;         Emacs Lisp project managed by `cask'.
+;;   `flymake-elisp-config-as-eask'
+;;         Emacs Lisp project managed by `eask'.
 ;;   `flymake-elisp-config-as-default'
 ;;         Default Emacs Lisp file.  It uses same `load-path' as default
 ;;         flymake.
@@ -210,11 +212,12 @@ This is just a wrapper of `elisp-flymake-byte-compile' to override
  `elisp-flymake-byte-compile-load-path'.
 
 REPORT-FN and ARGS are directly passed to `elisp-flymake-byte-compile'."
-  ;; NOTE: Remove the process object when process is already finished.
+  ;; NOTE: `flymake-elisp-config--initializer-sentinel' unsets this variable
+  ;;   by when process is already finished.
   (unless flymake-elisp-config--initializer-process
     (let ((elisp-flymake-byte-compile-load-path
            (flymake-elisp-config-get-load-path (current-buffer))))
-      (elisp-flymake-byte-compile report-fn args))))
+      (apply #'elisp-flymake-byte-compile report-fn args))))
 
 ;;;###autoload
 (define-minor-mode flymake-elisp-config-mode
@@ -246,7 +249,8 @@ Set getter function of `load-path' to `flymake-elisp-config-load-path-getter'."
 (defcustom flymake-elisp-config-auto-configurer-alist
   '((flymake-elisp-config-config-p . flymake-elisp-config-as-config)
     (flymake-elisp-config-keg-p . flymake-elisp-config-as-keg)
-    (flymake-elisp-config-cask-p . flymake-elisp-config-as-cask))
+    (flymake-elisp-config-cask-p . flymake-elisp-config-as-cask)
+    (flymake-elisp-config-eask-p . flymake-elisp-config-as-eask))
   "Alist to determine a flymake configurer in elisp buffer.
 Each element is `(PRED . CONFIGURER)'.
 PRED is a function which takes buffer to configure as argument,
@@ -488,6 +492,59 @@ It also runs when the buffer initialized."
   (with-current-buffer buffer
     (flymake-elisp-config-mode)
     (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-keg)))
+
+
+
+;;; `load-path' getter for project managed by `eask'
+
+(defun flymake-elisp-config-get-load-path-eask (buffer)
+  "Return `load-path' in Emacs Lisp BUFFER under a project managed by `eask'."
+  (append elisp-flymake-byte-compile-load-path
+          (with-current-buffer buffer
+            (let ((default-directory (project-root (project-current))))
+              (with-temp-buffer
+                (call-process "eask" nil '(t nil) nil "load-path")
+                (split-string (buffer-string) "\n" t))))))
+
+(defun flymake-elisp-config-eask-p (buffer)
+  "Return non-nil if BUFFER is in the project managed by `eask'."
+  (with-current-buffer buffer
+    (when-let* ((project (project-current))
+                (root (project-root project)))
+      (locate-file "Eask" (list root)))))
+
+;;;###autoload
+(defun flymake-elisp-config-as-eask (buffer)
+  "BUFFER file is regarded as a `eask'-managed project by flymake.
+`load-path' used by flymake is provided by
+`flymake-elisp-config-get-load-path-eask'."
+  (interactive
+   (list (current-buffer)))
+
+  (unless (executable-find "eask")
+    (user-error "`eask' executable is not found.  Please install it and run M-x `flymake-elisp-config-as-eask'"))
+
+  (message "Run \"eask install-deps --dev\"...")
+  (flymake-elisp-config--initializer
+   buffer
+   shell-file-name
+   (list
+    (cond
+     ((string-match-p "cmd.exe$" shell-file-name) "/c")
+     ((string-match-p "powershell.exe$" shell-file-name) "-Command")
+     (t "-c"))
+    "eask install-deps --dev in %s")
+   `(lambda (_process event)
+      (if (string= event "finished\n")
+          (progn
+            (message "Run \"eask install-deps --dev\"...done")
+            (with-current-buffer ,buffer
+              (flymake-start t)))
+        (user-error "Somehow \"eask install-deps --dev\" failed"))))
+
+  (with-current-buffer buffer
+    (flymake-elisp-config-mode)
+    (setq flymake-elisp-config-load-path-getter #'flymake-elisp-config-get-load-path-eask)))
 
 (provide 'flymake-elisp-config)
 ;;; flymake-elisp-config.el ends here
