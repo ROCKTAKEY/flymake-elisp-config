@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 1.1.0
+;; Version: 1.1.1
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
@@ -533,7 +533,7 @@ It also runs when the buffer initialized."
      ((string-match-p "cmd.exe$" shell-file-name) "/c")
      ((string-match-p "powershell.exe$" shell-file-name) "-Command")
      (t "-c"))
-    "eask install-deps --dev in %s")
+    "eask install-deps --dev")
    `(lambda (_process event)
       (if (string= event "finished\n")
           (progn
