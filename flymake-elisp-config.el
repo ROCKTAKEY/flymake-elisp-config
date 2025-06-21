@@ -380,13 +380,6 @@ It also runs when the buffer initialized."
     (append elisp-flymake-byte-compile-load-path
             flymake-elisp-config-load-path-cask-cache)))
 
-(defun flymake-elisp-config-get-load-path-cask-get-from-cask ()
-  "Return `load-path' for flymake in package file from `cask'."
-  (let ((default-directory (project-root (project-current))))
-    (split-string
-     (car (last (split-string (shell-command-to-string "cask load-path"))))
-     (path-separator))))
-
 (defun flymake-elisp-config-get-load-path-cask-refresh (buffer)
   "Refresh cache for `load-path' in elisp BUFFER under a `cask'-managed project."
   (interactive
