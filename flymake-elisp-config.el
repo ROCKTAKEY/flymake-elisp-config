@@ -5,7 +5,7 @@
 ;; Author: ROCKTAKEY <rocktakey@gmail.com>
 ;; Keywords: lisp
 
-;; Version: 1.1.1
+;; Version: 1.2.0
 ;; Package-Requires: ((emacs "28.1"))
 ;; URL: https://github.com/ROCKTAKEY/flymake-elisp-config
 
