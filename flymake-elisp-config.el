@@ -428,7 +428,7 @@ It also runs when the buffer initialized."
   (flymake-elisp-config--initializer
    buffer
    "cask" '("install")
-   `(lambda (_process _event)
+   `(lambda (_process event)
       (if (string= event "finished\n")
           (progn
             (message "Run \"cask install\"...done")
