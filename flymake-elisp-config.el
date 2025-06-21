@@ -371,13 +371,14 @@ files."
 (defvar-local flymake-elisp-config-load-path-cask-cache nil
   "Cache for `flymake-elisp-config-get-load-path-cask'.")
 
-(defun flymake-elisp-config-get-load-path-cask (_)
-  "Get `load-path' for flymake in Emacs Lisp package file managed by `cask'.
+(defun flymake-elisp-config-get-load-path-cask (buffer)
+  "Get `load-path' in Emacs Lisp package file in BUFFER managed by `cask'.
 Because \"cask load-path\" is sometimes late, it return only cache.
 You can refresh cache by `flymake-elisp-config-get-load-path-cask-refresh'.
 It also runs when the buffer initialized."
-  (append elisp-flymake-byte-compile-load-path
-          flymake-elisp-config-load-path-cask-cache))
+  (with-current-buffer buffer
+    (append elisp-flymake-byte-compile-load-path
+            flymake-elisp-config-load-path-cask-cache)))
 
 (defun flymake-elisp-config-get-load-path-cask-get-from-cask ()
   "Return `load-path' for flymake in package file from `cask'."
@@ -500,13 +501,14 @@ It also runs when the buffer initialized."
 (defvar-local flymake-elisp-config-load-path-eask-cache nil
   "Cache for `flymake-elisp-config-get-load-path-eask'.")
 
-(defun flymake-elisp-config-get-load-path-eask (_)
-  "Get `load-path' for flymake in Emacs Lisp package file managed by `eask'.
+(defun flymake-elisp-config-get-load-path-eask (buffer)
+  "Get `load-path' in Emacs Lisp package file in BUFFER managed by `eask'.
 Because \"eask load-path\" is sometimes late, it return only cache.
 You can refresh cache by `flymake-elisp-config-get-load-path-eask-refresh'.
 It also runs when the buffer initialized."
-  (append elisp-flymake-byte-compile-load-path
-          flymake-elisp-config-load-path-eask-cache))
+  (with-current-buffer buffer
+    (append elisp-flymake-byte-compile-load-path
+            flymake-elisp-config-load-path-eask-cache)))
 
 (defun flymake-elisp-config-get-load-path-eask-refresh (buffer)
   "Refresh cache for `load-path' in elisp BUFFER under a `eask'-managed project."
