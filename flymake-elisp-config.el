@@ -497,14 +497,38 @@ It also runs when the buffer initialized."
 
 ;;; `load-path' getter for project managed by `eask'
 
-(defun flymake-elisp-config-get-load-path-eask (buffer)
-  "Return `load-path' in Emacs Lisp BUFFER under a project managed by `eask'."
+(defvar-local flymake-elisp-config-load-path-eask-cache nil
+  "Cache for `flymake-elisp-config-get-load-path-eask'.")
+
+(defun flymake-elisp-config-get-load-path-eask (_)
+  "Get `load-path' for flymake in Emacs Lisp package file managed by `eask'.
+Because \"eask load-path\" is sometimes late, it return only cache.
+You can refresh cache by `flymake-elisp-config-get-load-path-eask-refresh'.
+It also runs when the buffer initialized."
   (append elisp-flymake-byte-compile-load-path
-          (with-current-buffer buffer
-            (let ((default-directory (project-root (project-current))))
-              (with-temp-buffer
-                (call-process "eask" nil '(t nil) nil "load-path")
-                (split-string (buffer-string) "\n" t))))))
+          flymake-elisp-config-load-path-eask-cache))
+
+(defun flymake-elisp-config-get-load-path-eask-refresh (buffer)
+  "Refresh cache for `load-path' in elisp BUFFER under a `eask'-managed project."
+  (interactive
+   (list (current-buffer)))
+  (message "Refresh load-path for flymake by \"eask load-path\"...")
+  (let ((process-buf (generate-new-buffer " *flymake-elisp-config - eask load-path*")))
+    (set-process-sentinel
+     (start-process "flymake-elisp-config - eask load-path" process-buf "eask" "load-path")
+     `(lambda (process event)
+        (unless (string= event "finished\n")
+          (user-error "Somehow \"eask load-path\" failed"))
+
+        (setq flymake-elisp-config-load-path-eask-cache
+              (split-string
+               (with-current-buffer (process-buffer process)
+                 (buffer-substring-no-properties (point-min) (point-max)))
+               "\n" t))
+        (kill-buffer (process-buffer process))
+        (with-current-buffer ,buffer
+          (flymake-start t))
+        (message "Refresh load-path for flymake by \"eask load-path\"...done")))))
 
 (defun flymake-elisp-config-eask-p (buffer)
   "Return non-nil if BUFFER is in the project managed by `eask'."
@@ -538,8 +562,7 @@ It also runs when the buffer initialized."
       (if (string= event "finished\n")
           (progn
             (message "Run \"eask install-deps --dev\"...done")
-            (with-current-buffer ,buffer
-              (flymake-start t)))
+            (flymake-elisp-config-get-load-path-eask-refresh ,buffer))
         (user-error "Somehow \"eask install-deps --dev\" failed"))))
 
   (with-current-buffer buffer
