@@ -368,6 +368,11 @@ files."
 
 ;;; `load-path' getter for project managed by `cask'
 
+(defun flymake-elisp-config-get-project-directory-cask (buffer)
+  "Get project directory for BUFFER in cask project."
+  (with-current-buffer buffer
+    (project-root (project-current))))
+
 (defvar-local flymake-elisp-config-load-path-cask-cache nil
   "Cache for `flymake-elisp-config-get-load-path-cask'.")
 
@@ -386,8 +391,7 @@ It also runs when the buffer initialized."
    (list (current-buffer)))
   (message "Refresh load-path for flymake by \"cask load-path\"...")
   (let* ((process-buf (generate-new-buffer " *flymake-elisp-config - cask load-path*"))
-         (process (let ((default-directory (with-current-buffer buffer
-                                             (project-root (project-current)))))
+         (process (let ((default-directory (flymake-elisp-config-get-project-directory-cask buffer)))
                     (start-process "flymake-elisp-config - cask load-path" process-buf "cask" "load-path"))))
     (set-process-sentinel
      process
@@ -442,14 +446,19 @@ It also runs when the buffer initialized."
 
 ;;; `load-path' getter for project managed by `keg'
 
+(defun flymake-elisp-config-get-project-directory-keg (buffer)
+  "Get project directory for BUFFER in keg project."
+  (with-current-buffer buffer
+    (project-root (project-current))))
+
 (defun flymake-elisp-config-get-load-path-keg (buffer)
   "Return `load-path' in Emacs Lisp BUFFER under a project managed by `keg'."
   (append elisp-flymake-byte-compile-load-path
-          (with-current-buffer buffer
-            (let ((default-directory (project-root (project-current))))
-              (split-string
-               (car (last (split-string (shell-command-to-string "keg load-path"))))
-               (path-separator))))))
+          (let ((default-directory (flymake-elisp-config-get-project-directory-keg buffer)))
+            (split-string
+             (car (last (split-string (with-current-buffer buffer
+                                        (shell-command-to-string "keg load-path")))))
+             (path-separator)))))
 
 (defun flymake-elisp-config-keg-p (buffer)
   "Return non-nil if BUFFER is in the project managed by `keg'."
@@ -495,6 +504,11 @@ It also runs when the buffer initialized."
 
 ;;; `load-path' getter for project managed by `eask'
 
+(defun flymake-elisp-config-get-project-directory-eask (buffer)
+  "Get project directory for BUFFER in eask project."
+  (with-current-buffer buffer
+    (project-root (project-current))))
+
 (defvar-local flymake-elisp-config-load-path-eask-cache nil
   "Cache for `flymake-elisp-config-get-load-path-eask'.")
 
@@ -513,8 +527,7 @@ It also runs when the buffer initialized."
    (list (current-buffer)))
   (message "Refresh load-path for flymake by \"eask load-path\"...")
   (let* ((process-buf (generate-new-buffer " *flymake-elisp-config - eask load-path*"))
-         (process (let ((default-directory (with-current-buffer buffer
-                                             (project-root (project-current)))))
+         (process (let ((default-directory (flymake-elisp-config-get-project-directory-eask buffer)))
                     (start-process "flymake-elisp-config - eask load-path" process-buf "eask" "load-path"))))
     (set-process-sentinel
      process
