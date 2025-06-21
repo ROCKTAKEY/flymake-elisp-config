@@ -392,19 +392,23 @@ It also runs when the buffer initialized."
   (interactive
    (list (current-buffer)))
   (message "Refresh load-path for flymake by \"cask load-path\"...")
-  (let ((process-buf (generate-new-buffer " *flymake-elisp-config - cask load-path*")))
+  (let* ((process-buf (generate-new-buffer " *flymake-elisp-config - cask load-path*"))
+         (process (let ((default-directory (with-current-buffer buffer
+                                             (project-root (project-current)))))
+                    (start-process "flymake-elisp-config - cask load-path" process-buf "cask" "load-path"))))
     (set-process-sentinel
-     (start-process "flymake-elisp-config - cask load-path" process-buf "cask" "load-path")
+     process
      `(lambda (process event)
         (unless (string= event "finished\n")
           (user-error "Somehow \"cask load-path\" failed"))
 
-        (setq flymake-elisp-config-load-path-cask-cache
-              (split-string
-               (car (last (split-string
-                           (with-current-buffer (process-buffer process)
-                             (buffer-substring-no-properties (point-min) (point-max))))))
-               (path-separator)))
+        (with-current-buffer ,buffer
+          (setq flymake-elisp-config-load-path-cask-cache
+                (split-string
+                 (car (last (split-string
+                             (with-current-buffer (process-buffer process)
+                               (buffer-substring-no-properties (point-min) (point-max))))))
+                 (path-separator))))
         (kill-buffer (process-buffer process))
         (with-current-buffer ,buffer
           (flymake-start t))
@@ -515,18 +519,22 @@ It also runs when the buffer initialized."
   (interactive
    (list (current-buffer)))
   (message "Refresh load-path for flymake by \"eask load-path\"...")
-  (let ((process-buf (generate-new-buffer " *flymake-elisp-config - eask load-path*")))
+  (let* ((process-buf (generate-new-buffer " *flymake-elisp-config - eask load-path*"))
+         (process (let ((default-directory (with-current-buffer buffer
+                                             (project-root (project-current)))))
+                    (start-process "flymake-elisp-config - eask load-path" process-buf "eask" "load-path"))))
     (set-process-sentinel
-     (start-process "flymake-elisp-config - eask load-path" process-buf "eask" "load-path")
+     process
      `(lambda (process event)
         (unless (string= event "finished\n")
           (user-error "Somehow \"eask load-path\" failed"))
 
-        (setq flymake-elisp-config-load-path-eask-cache
-              (split-string
-               (with-current-buffer (process-buffer process)
-                 (buffer-substring-no-properties (point-min) (point-max)))
-               "\n" t))
+        (with-current-buffer ,buffer
+          (setq flymake-elisp-config-load-path-eask-cache
+                (split-string
+                 (with-current-buffer (process-buffer process)
+                   (buffer-substring-no-properties (point-min) (point-max)))
+                 "\n" t)))
         (kill-buffer (process-buffer process))
         (with-current-buffer ,buffer
           (flymake-start t))
